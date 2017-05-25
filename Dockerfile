@@ -30,8 +30,10 @@ RUN cd /tmp && \
 ENV NEXTCLOUD_DB_NAME=eigenerserver
 ENV NEXTCLOUD_DB_USER=eigenerserver
 ENV NEXTCLOUD_DB_PASSWORD=eigenerserver
+ENV NEXTCLOUD_DOMAIN=eigener-server.ch
+ENV NEXTCLOUD_ADMIN_PASSWORD=eigenerserver
 
-VOLUME /host/nextcloud/data /host/nextcloud/config /host/nextcloud/apps2
+VOLUME ["/host/nextcloud"]
 
 COPY run.sh /usr/local/bin/run.sh
 RUN chmod +x /usr/local/bin/*
