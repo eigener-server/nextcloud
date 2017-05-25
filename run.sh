@@ -2,6 +2,7 @@
 
 #set -e 
 
+
 if [ ! -f /firstrun ]; then
 
     echo -e "\n" > /tmp/wait_for_mysql.php
@@ -22,11 +23,13 @@ if [ ! -f /firstrun ]; then
            -e '$a        sleep(5);' \
            -e '$a    }' \
            -e '$a}' \
+           -e '$a?>' \
     /tmp/wait_for_mysql.php
 
-    # Put the configuration and apps into volumes
-    ln -sf /host/nextcloud/config/config.php /var/www/html/config/config.php &>/dev/null
-    ln -sf /host/nextcloud/apps2 /var/www/html &>/dev/null
+    if [ -f /host/nextcloud/firstrun ]; then
+        # link the config to the app
+        ln -sf /host/nextcloud/config/config.php /var/www/html/config/config.php &>/dev/null
+    fi
 
     # Don't run this again
     touch /firstrun
@@ -35,7 +38,7 @@ fi
 /usr/local/bin/php /tmp/wait_for_mysql.php
 
 
-if [ ! -f /host/nextcloud/data/firstrun ]; then
+if [ ! -f /host/nextcloud/firstrun ]; then
     # New installation, run the setup
     mkdir -p /host/nextcloud/data/log
     mkdir -p /host/nextcloud/apps2
@@ -47,13 +50,10 @@ if [ ! -f /host/nextcloud/data/firstrun ]; then
     chown -R www-data:www-data /host/nextcloud/data
     chown www-data:www-data /host/nextcloud/config
 
-    CONFIGFILE=/host/nextcloud/config/config.php
-
-    echo -e "\n" >> $CONFIGFILE
+    echo -e "\n" >> /host/nextcloud/config/config.php
     instanceid=oc$(echo $PRIMARY_HOSTNAME | sha1sum | fold -w 10 | head -n 1)
     sed -i -e '$a<?php' \
            -e '$a\$CONFIG = array (' \
-           -e '$a  "datadirectory" => "/host/nextcloud/data",' \
            -e '$a  "apps_paths" => array (' \
            -e '$a      0 => array (' \
            -e '$a              "path"     => "/var/www/html/apps",' \
@@ -66,7 +66,9 @@ if [ ! -f /host/nextcloud/data/firstrun ]; then
            -e '$a              "writable" => true,' \
            -e '$a      ),' \
            -e '$a  ),' \
-           -e '$a  "memcache.local" => "\OC\Memcache\Redis",' \
+           -e '$a  "datadirectory" => "/host/nextcloud/data",' \
+           -e '$a  #"memcache.local" => "\\OC\\Memcache\\APCu",' \
+           -e '$a  "memcache.local" => "\\OC\\Memcache\\Redis",' \
            -e '$a  "filelocking.enabled" => "true",' \
            -e '$a   "redis" => array(' \
            -e '$a        "host" => "redis",' \
@@ -75,15 +77,19 @@ if [ ! -f /host/nextcloud/data/firstrun ]; then
            -e '$a  "instanceid" => "'${instanceid}'",' \
            -e '$a  "trusted_domains" =>' \
            -e '$a    array (' \
-           -e '$a      1 => "'${NEXTCLOUD_DOMAIN}'",' \
+           -e '$a      0 => "'${NEXTCLOUD_DOMAIN}'",' \
            -e '$a    ),' \
            -e '$a);' \
            -e '$a?>' \
-        ${CONFIGFILE}
+    /host/nextcloud/config/config.php
+
+    # link the config to the app
+    ln -sf /host/nextcloud/config/config.php /var/www/html/config/config.php &>/dev/null
 
     cd /var/www/html
     # install db and admin user
-    /usr/local/bin/php occ maintenance:install --database "mysql" --database-name "${NEXTCLOUD_DB_NAME}" --database-user "$NEXTCLOUD_DB_USER" --database-pass "NEXTCLOUD_DB_PASSWORD" --admin-user "admin" --admin-pass "NEXTCLOUD_ADMIN_PASSWORD" --database-host "mysql"
+    /usr/local/bin/php occ maintenance:install --database "mysql" --database-name "${NEXTCLOUD_DB_NAME}" --database-user "${NEXTCLOUD_DB_USER}" --database-pass "${NEXTCLOUD_DB_PASSWORD}" --admin-user "admin" --admin-pass "${NEXTCLOUD_ADMIN_PASSWORD}" --database-host "mysql" --data-dir "/host/nextcloud/data"
+    /usr/local/bin/php occ config:system:set trusted_domains 1 --value=${NEXTCLOUD_DOMAIN}
 
     # Don't run this again
     touch /host/nextcloud/firstrun

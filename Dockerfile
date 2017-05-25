@@ -25,6 +25,7 @@ RUN cd /tmp && \
 
     mkdir -p /var/www/html && \
     tar xjvf ${NEXTCLOUD_DOWNLOAD} --strip 1 -C /var/www/html && \
+    ln -s /var/www/html /var/www/html/nextcloud && \
     rm -rf /tmp/*
 
 ENV NEXTCLOUD_DB_NAME=eigenerserver
@@ -40,3 +41,4 @@ RUN chmod +x /usr/local/bin/*
 
 ENTRYPOINT ["/bin/bash","/usr/local/bin/run.sh"]
 
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
