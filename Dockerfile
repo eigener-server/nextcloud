@@ -1,8 +1,31 @@
-FROM eigenerserver/apache2:0.1.1
+FROM eigenerserver/apache2:0.1.2
 
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install wget bzip2 && \
-    apt-get -y --no-install-recommends install --reinstall ca-certificates && \
+    apt-get install -y --no-install-recommends wget bzip2 && \
+    apt-get install -y --no-install-recommends --reinstall ca-certificates && \
+    apt-get install -y --no-install-recommends libmagickwand-dev && \
+    pecl install imagick && docker-php-ext-enable imagick && \
+    docker-php-ext-install json && \
+    docker-php-ext-install ctype && \
+    docker-php-ext-install dom && \
+    docker-php-ext-install posix && \
+    docker-php-ext-install zip && \
+    apt install -y --no-install-recommends libcurl3-dev && \
+    docker-php-ext-install curl && \
+    apt install -y --no-install-recommends libicu-dev && \
+    docker-php-ext-install intl && \
+    docker-php-ext-install fileinfo && \
+    docker-php-ext-install bz2 && \
+    apt install -y --no-install-recommends libldap2-dev && \
+    docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu && \
+    docker-php-ext-install ldap && \
+    docker-php-ext-install xml && \
+    docker-php-ext-install mbstring && \
+    pecl install APCu && \
+    docker-php-ext-enable apcu && \
+    pecl install redis && \
+    docker-php-ext-enable redis && \
+    docker-php-ext-enable opcache && \
     apt-get clean && \
 rm -rf /var/lib/apt/lists/* /tmp/*
 
