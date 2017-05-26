@@ -1,5 +1,4 @@
-FROM eigenerserver/apache2:latest
-#FROM eigenerserver/apache2:0.1.0
+FROM eigenerserver/apache2:0.1.1
 
 RUN apt-get update && \
     apt-get -y --no-install-recommends install wget bzip2 && \
@@ -25,8 +24,16 @@ RUN cd /tmp && \
 
     mkdir -p /var/www/html && \
     tar xjvf ${NEXTCLOUD_DOWNLOAD} --strip 1 -C /var/www/html && \
-    ln -s /var/www/html /var/www/html/nextcloud && \
     rm -rf /tmp/*
+
+RUN a2enmod rewrite && \
+    a2enmod headers && \
+    a2enmod env && \
+    a2enmod dir && \
+    a2enmod mime
+
+COPY nextcloud.conf /etc/apache2/sites-available/nextcloud.conf
+RUN ln -s /etc/apache2/sites-available/nextcloud.conf /etc/apache2/sites-enabled/nextcloud.conf
 
 ENV NEXTCLOUD_DB_NAME=eigenerserver
 ENV NEXTCLOUD_DB_USER=eigenerserver

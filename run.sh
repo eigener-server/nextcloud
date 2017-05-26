@@ -26,9 +26,24 @@ if [ ! -f /firstrun ]; then
            -e '$a?>' \
     /tmp/wait_for_mysql.php
 
+    sed -i -e "s/^;opcache.enable\s*=.*/opcache.enable=1/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^;opcache.enable_cli\s*=.*/opcache.enable_cli=1/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^;opcache.interned_strings_buffer\s*=.*/opcache.interned_strings_buffer=8/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^;opcache.max_accelerated_files\s*=.*/opcache.max_accelerated_files=10000/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^;opcache.memory_consumption\s*=.*/opcache.memory_consumption=128/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^;opcache.save_comments\s*=.*/opcache.save_comments=1/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^;opcache.revalidate_freq\s*=.*/opcache.revalidate_freq=1/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^php_value post_max_size\s*=.*/post_max_size = 16G/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^upload_max_filesize\s*=.*/upload_max_filesize = 16G/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^max_input_time\s*=.*/max_input_time = 3600/" /usr/local/etc/php/php.ini
+    sed -i -e "s/^max_execution_time\s*=.*/max_execution_time = 3600/" /usr/local/etc/php/php.ini
+
+
+
     if [ -f /host/nextcloud/firstrun ]; then
         # link the config to the app
         ln -sf /host/nextcloud/config/config.php /var/www/html/config/config.php &>/dev/null
+        ln -sf /host/nextcloud/apps2 /var/www/html &>/dev/null
     fi
 
     # Don't run this again
@@ -61,11 +76,12 @@ if [ ! -f /host/nextcloud/firstrun ]; then
            -e '$a              "writable" => false,' \
            -e '$a      ),' \
            -e '$a      1 => array (' \
-           -e '$a              "path"     => "/host/nextcloud/apps2",' \
+           -e '$a              "path"     => "/var/www/html/apps2",' \
            -e '$a              "url"      => "/apps2",' \
            -e '$a              "writable" => true,' \
            -e '$a      ),' \
            -e '$a  ),' \
+           -e '$a  "overwriteprotocol" => "https",' \
            -e '$a  "datadirectory" => "/host/nextcloud/data",' \
            -e '$a  #"memcache.local" => "\\OC\\Memcache\\APCu",' \
            -e '$a  "memcache.local" => "\\OC\\Memcache\\Redis",' \
@@ -73,6 +89,8 @@ if [ ! -f /host/nextcloud/firstrun ]; then
            -e '$a   "redis" => array(' \
            -e '$a        "host" => "redis",' \
            -e '$a        "port" => 6379,' \
+           -e '$a        "timeout" => 0.0,' \
+           -e '$a        "password" => "", // Optional, if not defined no password will be used.' \
            -e '$a         ),' \
            -e '$a  "instanceid" => "'${instanceid}'",' \
            -e '$a  "trusted_domains" =>' \
@@ -85,11 +103,15 @@ if [ ! -f /host/nextcloud/firstrun ]; then
 
     # link the config to the app
     ln -sf /host/nextcloud/config/config.php /var/www/html/config/config.php &>/dev/null
+    ln -sf /host/nextcloud/apps2 /var/www/html &>/dev/null
 
     cd /var/www/html
     # install db and admin user
     /usr/local/bin/php occ maintenance:install --database "mysql" --database-name "${NEXTCLOUD_DB_NAME}" --database-user "${NEXTCLOUD_DB_USER}" --database-pass "${NEXTCLOUD_DB_PASSWORD}" --admin-user "admin" --admin-pass "${NEXTCLOUD_ADMIN_PASSWORD}" --database-host "mysql" --data-dir "/host/nextcloud/data"
     /usr/local/bin/php occ config:system:set trusted_domains 1 --value=${NEXTCLOUD_DOMAIN}
+
+    sed -i -e "s/^post_max_size\s*=.*/post_max_size = 16G/" /var/www/html/.user.ini
+    sed -i -e "s/^upload_max_filesize\s*=.*/upload_max_filesize = 16G/" /var/www/html/.user.ini
 
     # Don't run this again
     touch /host/nextcloud/firstrun
