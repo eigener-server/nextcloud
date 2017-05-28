@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Hedgehog Cloud by www.eigener-server.ch https://www.eigener-server.ch/en/igel-cloud \
+# is licensed under a Creative Commons Attribution 4.0 International Lizenz \
+# http://creativecommons.org/licenses/by/4.0/ \
+# To remove the links visit https://www.eigener-server.ch/en/igel-cloud"
+
 #set -e 
 
 
@@ -46,6 +51,12 @@ if [ ! -f /firstrun ]; then
         ln -sf /host/nextcloud/apps2 /var/www/html &>/dev/null
     fi
 
+    ################################################################################
+    # License Dont remove this -> see https://www.eigener-server.ch/en/igel-cloud/ #
+    cp -r /var/www/html/themes/example /var/www/html/themes/eigener-server.ch
+    cp -r /host/defaults.php /var/www/html/themes/eigener-server.ch/defaults.php
+    ################################################################################
+
     # Don't run this again
     touch /firstrun
 fi
@@ -83,6 +94,10 @@ if [ ! -f /host/nextcloud/firstrun ]; then
            -e '$a  ),' \
            -e '$a  "overwriteprotocol" => "https",' \
            -e '$a  "datadirectory" => "/host/nextcloud/data",' \
+           -e '$a  ################################################################################",' \
+           -e '$a  # License Dont remove this -> see https://www.eigener-server.ch/en/igel-cloud/ #",' \
+           -e '$a  "theme" => "eigener-server.ch",' \
+           -e '$a  ################################################################################",' \
            -e '$a  #"memcache.local" => "\\OC\\Memcache\\APCu",' \
            -e '$a  "memcache.local" => "\\OC\\Memcache\\Redis",' \
            -e '$a  "filelocking.enabled" => "true",' \

@@ -1,4 +1,9 @@
-FROM eigenerserver/apache2:0.1.2
+FROM eigenerserver/apache2:1.0
+
+LABEL description="Hedgehog Cloud by www.eigener-server.ch https://www.eigener-server.ch/en/igel-cloud \
+                   is licensed under a Creative Commons Attribution 4.0 International Lizenz \
+                   http://creativecommons.org/licenses/by/4.0/ \
+                   To remove the links visit https://www.eigener-server.ch/en/igel-cloud"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends wget bzip2 && \
@@ -57,6 +62,11 @@ RUN a2enmod rewrite && \
 
 COPY nextcloud.conf /etc/apache2/sites-available/nextcloud.conf
 RUN ln -s /etc/apache2/sites-available/nextcloud.conf /etc/apache2/sites-enabled/nextcloud.conf
+
+################################################################################
+# License Dont remove this -> see https://www.eigener-server.ch/en/igel-cloud/ #
+COPY defaults.php /host/
+################################################################################
 
 ENV NEXTCLOUD_DB_NAME=eigenerserver
 ENV NEXTCLOUD_DB_USER=eigenerserver
