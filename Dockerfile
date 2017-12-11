@@ -6,7 +6,7 @@ LABEL description="Hedgehog Cloud by www.eigener-server.ch https://www.eigener-s
                    To remove the links visit https://www.eigener-server.ch/en/igel-cloud"
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget bzip2 && \
+    apt-get install -y --no-install-recommends wget bzip2 cron sudo && \
     apt-get install -y --no-install-recommends --reinstall ca-certificates && \
     apt-get install -y --no-install-recommends libmagickwand-dev && \
     pecl install imagick && docker-php-ext-enable imagick && \
@@ -79,6 +79,11 @@ VOLUME ["/host/nextcloud"]
 COPY run.sh /usr/local/bin/run.sh
 RUN chmod +x /usr/local/bin/*
 
+COPY crontab.txt /crontab.txt
+RUN /usr/bin/crontab /crontab.txt
+
+COPY supervisord.conf /etc/supervisor/conf.d/nextcloud.conf
+
 ENTRYPOINT ["/bin/bash","/usr/local/bin/run.sh"]
 
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["/usr/bin/supervisord"]

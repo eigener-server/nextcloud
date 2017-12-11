@@ -1,0 +1,6 @@
+#Minute Stunde  Tag_des_Monats  Monat   Wochentag
+#  */5    *         1-7          12        1-5
+
+# Nextcloud cron job
+*/15  *  *  *  * sudo -u www-data php -f /var/www/html/cron.php
+

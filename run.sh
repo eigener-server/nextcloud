@@ -128,6 +128,13 @@ if [ ! -f /host/nextcloud/firstrun ]; then
     sed -i -e "s/^post_max_size\s*=.*/post_max_size = 16G/" /var/www/html/.user.ini
     sed -i -e "s/^upload_max_filesize\s*=.*/upload_max_filesize = 16G/" /var/www/html/.user.ini
 
+    chown -R www-data:www-data /var/www/html
+    chown www-data:www-data /host/nextcloud/config/config.php
+    chown -R www-data:www-data /host/nextcloud/apps2
+    chown -R www-data:www-data /host/nextcloud/data
+
+    sudo -u www-data php occ background:cron
+
     # Don't run this again
     touch /host/nextcloud/firstrun
 
@@ -142,10 +149,5 @@ else
     #    echo "...which seemed to work."
     #fi
 fi
-
-chown -R www-data:www-data /var/www/html
-chown www-data:www-data /host/nextcloud/config/config.php
-chown -R www-data:www-data /host/nextcloud/apps2
-chown -R www-data:www-data /host/nextcloud/data
 
 exec "$@"
