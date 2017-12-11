@@ -57,6 +57,9 @@ if [ ! -f /firstrun ]; then
     cp -r /host/defaults.php /var/www/html/themes/eigener-server.ch/defaults.php
     ################################################################################
 
+    # Set File Permissions
+    /usr/local/bin/permissions.sh
+
     # Don't run this again
     touch /firstrun
 fi
@@ -65,16 +68,8 @@ fi
 
 
 if [ ! -f /host/nextcloud/firstrun ]; then
-    # New installation, run the setup
-    mkdir -p /host/nextcloud/data/log
-    mkdir -p /host/nextcloud/apps2
-    mkdir -p /host/nextcloud/data
-    mkdir -p /host/nextcloud/config
-
-    chown -R www-data:www-data /var/www/html
-    chown -R www-data:www-data /host/nextcloud/apps2
-    chown -R www-data:www-data /host/nextcloud/data
-    chown www-data:www-data /host/nextcloud/config
+    # Set File Permissions
+    /usr/local/bin/permissions.sh
 
     echo -e "\n" >> /host/nextcloud/config/config.php
     instanceid=oc$(echo $PRIMARY_HOSTNAME | sha1sum | fold -w 10 | head -n 1)

@@ -80,6 +80,7 @@ RUN mkdir -p /var/log/supervisor && \
     mkdir -p /etc/supervisor/conf.d
 
 COPY run.sh /usr/local/bin/run.sh
+COPY permissions.sh /usr/local/bin/permissions.sh
 RUN chmod +x /usr/local/bin/*
 
 COPY crontab.txt /crontab.txt
