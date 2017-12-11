@@ -6,7 +6,7 @@ LABEL description="Hedgehog Cloud by www.eigener-server.ch https://www.eigener-s
                    To remove the links visit https://www.eigener-server.ch/en/igel-cloud"
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget bzip2 cron sudo && \
+    apt-get install -y --no-install-recommends wget bzip2 cron sudo supervisor && \
     apt-get install -y --no-install-recommends --reinstall ca-certificates && \
     apt-get install -y --no-install-recommends libmagickwand-dev && \
     pecl install imagick && docker-php-ext-enable imagick && \
@@ -75,6 +75,9 @@ ENV NEXTCLOUD_DOMAIN=eigener-server.ch
 ENV NEXTCLOUD_ADMIN_PASSWORD=eigenerserver
 
 VOLUME ["/host/nextcloud"]
+
+RUN mkdir -p /var/log/supervisor && \
+    mkdir -p /etc/supervisor/conf.d
 
 COPY run.sh /usr/local/bin/run.sh
 RUN chmod +x /usr/local/bin/*
