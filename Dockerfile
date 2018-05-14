@@ -34,7 +34,7 @@ RUN apt-get update && \
     apt-get clean && \
 rm -rf /var/lib/apt/lists/* /tmp/*
 
-ENV NEXTCLOUD_VERSION=12.0.4
+ENV NEXTCLOUD_VERSION=12.0.7
 ENV NEXTCLOUD_GPG="2880 6A87 8AE4 23A2 8372 792E D758 99B9 A724 937A"
 
 RUN cd /tmp && \
@@ -82,6 +82,7 @@ RUN mkdir -p /var/log/supervisor && \
 COPY run.sh /usr/local/bin/run.sh
 COPY permissions.sh /usr/local/bin/permissions.sh
 RUN chmod +x /usr/local/bin/*
+RUN /usr/local/bin/permissions.sh
 
 COPY crontab.txt /crontab.txt
 RUN /usr/bin/crontab /crontab.txt
