@@ -19,6 +19,11 @@ find ${ncpath}/apps/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgr
 find ${ncpath}/assets/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
 find ${ncpath}/themes/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
 find ${ncpath}/updater/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
+find ${ncpath} ! -group ${htgroup} -print0 | xargs -0 chown ${rootuser}:${htgroup}
+find ${ncpath}/apps/ ! -group ${htgroup} -print0 | xargs -0 chown ${htuser}:${htgroup}
+find ${ncpath}/assets/ ! -group ${htgroup} -print0 | xargs -0 chown ${htuser}:${htgroup}
+find ${ncpath}/themes/ ! -group ${htgroup} -print0 | xargs -0 chown ${htuser}:${htgroup}
+find ${ncpath}/updater/ ! -group ${htgroup} -print0 | xargs -0 chown ${htuser}:${htgroup}
 
 if [ ! -f /host/nextcloud/firstrun ]; then
   # New installation, run the setup
@@ -33,6 +38,10 @@ if [ ! -f /host/nextcloud/firstrun ]; then
   find ${ncdatapath}/config/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
   find ${ncdatapath}/data/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
   find ${ncdatapath}/apps2/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
+  find ${ncdatapath} ! -group ${htgroup} -print0 | xargs -0 chown ${rootuser}:${htgroup}
+  find ${ncdatapath}/config/ ! -group ${htgroup} -print0 | xargs -0 chown ${htuser}:${htgroup}
+  find ${ncdatapath}/data/ ! -group ${htgroup} -print0 | xargs -0 chown ${htuser}:${htgroup}
+  find ${ncdatapath}/apps2/ ! -group ${htgroup} -print0 | xargs -0 chown ${htuser}:${htgroup}
 fi
 
 chmod +x ${ncpath}/occ
