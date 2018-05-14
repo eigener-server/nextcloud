@@ -123,10 +123,8 @@ if [ ! -f /host/nextcloud/firstrun ]; then
     sed -i -e "s/^post_max_size\s*=.*/post_max_size = 16G/" /var/www/html/.user.ini
     sed -i -e "s/^upload_max_filesize\s*=.*/upload_max_filesize = 16G/" /var/www/html/.user.ini
 
-    chown -R www-data:www-data /var/www/html
-    chown www-data:www-data /host/nextcloud/config/config.php
-    chown -R www-data:www-data /host/nextcloud/apps2
-    chown -R www-data:www-data /host/nextcloud/data
+    # Set File Permissions
+    /usr/local/bin/permissions.sh
 
     sudo -u www-data php occ background:cron
 
@@ -134,8 +132,8 @@ if [ ! -f /host/nextcloud/firstrun ]; then
     touch /host/nextcloud/firstrun
 
 else
-    echo "auto upgrade disabled"
-    #occ upgrade
+    echo "upgrade to version of this Dockerfile"
+    sudo -u www-data php occ upgrade
     #if [ \( $? -ne 0 \) -a \( $? -ne 3 \) ]; then
     #    echo "Trying ownCloud upgrade again to work around ownCloud upgrade bug..."
     #    occ upgrade
