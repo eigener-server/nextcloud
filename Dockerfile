@@ -52,7 +52,7 @@ RUN cd /tmp && \
     if [ "${CHECK_2}" != "${NEXTCLOUD_GPG}" ]; then echo "Fingerprint match error: ${CHECK_2}" && exit 1; fi && \
 
     mkdir -p /var/www/html && \
-    tar xjvf ${NEXTCLOUD_DOWNLOAD} --strip 1 -C /var/www/html && \
+    tar xjvf ${NEXTCLOUD_DOWNLOAD} --strip 1 --owner='root' --group='www-data' -C /var/www/html && \
     rm -rf /tmp/*
 
 RUN a2enmod rewrite && \
