@@ -14,11 +14,11 @@ find ${ncpath}/ -type f -print0 | xargs -0 chmod 0640
 find ${ncpath}/ -type d -print0 | xargs -0 chmod 0750
 
 printf "chown Directories\n"
-chown -R ${rootuser}:${htgroup} ${ncpath}
-chown -R ${htuser}:${htgroup} ${ncpath}/apps/
-chown -R ${htuser}:${htgroup} ${ncpath}/assets/
-chown -R ${htuser}:${htgroup} ${ncpath}/themes/
-chown -R ${htuser}:${htgroup} ${ncpath}/updater/
+find ${ncpath} ! -user ${rootuser} -print0 | xargs -0 chown ${rootuser}:${htgroup}
+find ${ncpath}/apps/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
+find ${ncpath}/assets/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
+find ${ncpath}/themes/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
+find ${ncpath}/updater/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
 
 if [ ! -f /host/nextcloud/firstrun ]; then
   # New installation, run the setup
@@ -28,10 +28,11 @@ if [ ! -f /host/nextcloud/firstrun ]; then
   mkdir -p $ncdatapath/config
   find ${ncdatapath}/ -type f -print0 | xargs -0 chmod 0640
   find ${ncdatapath}/ -type d -print0 | xargs -0 chmod 0750
-  chown -R ${rootuser}:${htgroup} ${ncdatapath}
-  chown -R ${htuser}:${htgroup} ${ncdatapath}/config/
-  chown -R ${htuser}:${htgroup} ${ncdatapath}/data/
-  chown -R ${htuser}:${htgroup} ${ncdatapath}/apps2
+
+  find ${ncdatapath} ! -user ${rootuser} -print0 | xargs -0 chown ${rootuser}:${htgroup}
+  find ${ncdatapath}/config/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
+  find ${ncdatapath}/data/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
+  find ${ncdatapath}/apps2/ ! -user ${htuser} -print0 | xargs -0 chown ${htuser}:${htgroup}
 fi
 
 chmod +x ${ncpath}/occ
